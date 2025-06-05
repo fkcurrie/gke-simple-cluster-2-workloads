@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama-chat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llama-chat
+  template:
+    metadata:
+      labels:
+        app: llama-chat
+    spec:
+      containers:
+      - name: llama-chat
+        image: llama-chat:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+        env:
+        - name: MODEL_NAME
+          value: "meta-llama/Llama-2-7b-chat-hf"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: llama-chat-service
+spec:
+  selector:
+    app: llama-chat
+  ports:
+  - port: 8000
+    targetPort: 8000
+  type: LoadBalancer 
